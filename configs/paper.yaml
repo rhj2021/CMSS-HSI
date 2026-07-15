@@ -1,0 +1,111 @@
+project:
+  name: cmss_hsi
+  data_root: data
+  output_dir: results/cmss_hsi
+  datasets:
+  - River
+  - Farmland
+  - Hermiston
+  seeds:
+  - 0
+  - 1
+  - 2
+  device: cuda:0
+  progress: true
+split:
+  block_size: 24
+  train_fraction: 0.15
+  val_fraction: 0.1
+  guard: 3
+  max_train_per_class: 7000
+  max_val_per_class: 4000
+transforms:
+- name: shift_1
+  type: translation
+  dx: 1.0
+  dy: 0.0
+- name: shift_3
+  type: translation
+  dx: 3.0
+  dy: 0.0
+- name: row_shift_4
+  type: row_shift
+  amplitude: 4.0
+  period: 72.0
+  harmonic: 0.2
+experiments:
+  clean_no_harm: true
+  clean_no_harm_transform: clean_no_harm
+correction:
+  methods:
+  - pc1_translation
+  - pca3_translation
+  - scanline_unweighted
+  - cmss_k1
+  - cmss
+  seed: 31415
+  pca_components: 3
+  global_radius: 6
+  row_radius: 3
+  smooth_sigma: 6.0
+  outer_iters: 3
+  safe_selector:
+    enabled: true
+    identity_min_abs_improvement: 0.0001
+    identity_min_rel_improvement: 0.005
+    identity_global_shift_threshold: 0.25
+    identity_cmss_rel_improvement_threshold: 0.01
+    pca_fallback_row_std_threshold: 0.75
+    pca_fallback_loss_margin_rel: 0.001
+    max_reasonable_row_std: 4.5
+    sample_size: 50000
+baselines:
+  IRMAD:
+    enabled: true
+    pca_components: 20
+    max_iter: 30
+    tolerance: 0.001
+    regularization: 0.001
+    sample_size: 50000
+  GETNET:
+    enabled: true
+    target_bands: 96
+    normalize: channel_minmax
+    plane_normalize: maxabs
+    pseudo_fraction: 0.7
+    max_pseudo_per_class: 6000
+    min_pseudo_per_class: 32
+    pseudo_val_fraction: 0.1
+    pool_size: 8
+    epochs: 45
+    batch_size: 64
+    eval_batch_size: 128
+    lr: 0.0002
+    weight_decay: 1.0e-05
+    patience: 9
+    num_workers: 0
+  GLAFormer:
+    enabled: true
+    patch_size: 6
+    embed_dim: 128
+    depth: 4
+    heads: 8
+    drop_path: 0.08
+    epochs: 60
+    batch_size: 64
+    eval_batch_size: 128
+    lr: 0.0003
+    weight_decay: 0.0001
+    patience: 12
+    amp: true
+    num_workers: 0
+report:
+  strong_baselines:
+  - GLAFormer
+  - GETNET
+  main_transforms:
+  - shift_1
+  - shift_3
+  - row_shift_4
+  gap_min_denominator: 0.01
+  noharm_max_median_drop: 0.005
