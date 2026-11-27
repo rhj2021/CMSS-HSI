@@ -1,0 +1,47 @@
+{
+  "River": {
+    "shape_hwb": [
+      463,
+      241,
+      198
+    ],
+    "t1_hash": "a64208b83c96f8adde14fd81983b127473860efb372d724e88cf638b8f7e2a24",
+    "t2_hash": "a64208b83c96f8adde14fd81983b127473860efb372d724e88cf638b8f7e2a24",
+    "gt_hash": "e018973f8c56df0ad91d2e25020cfb00569f7eaf3aa3928611130ce48fdd98db",
+    "gt": {
+      "unchanged_count": 101885,
+      "changed_count": 9698,
+      "ignored_count": 0
+    }
+  },
+  "Farmland": {
+    "shape_hwb": [
+      450,
+      140,
+      155
+    ],
+    "t1_hash": "dcf0668bdedec362d1e99ffceb2a4c0b553280da985ca2bffe9c32202b4c1e1e",
+    "t2_hash": "3334e2687098244a2cedcfe19f71630c9bb8009d419fb90aca08aaf345b36619",
+    "gt_hash": "a3b0b21649d87175f43e34c43fa9ead855088f65187ef695fe3aeb5df647868f",
+    "gt": {
+      "unchanged_count": 44723,
+      "changed_count": 18277,
+      "ignored_count": 0
+    }
+  },
+  "Hermiston": {
+    "shape_hwb": [
+      200,
+      390,
+      242
+    ],
+    "t1_hash": "e103f620434fda54bcf2d0ef943dbf6521bda1bc09e7a5ca3f11b7715297a43e",
+    "t2_hash": "24c70b9871a835d824423f481d72ce1ddd86b24bf0b76858c7729a88db6388b5",
+    "gt_hash": "778468fae84035e21952e6cb58b5ad637110dd508a61c4351230a19c521759c5",
+    "gt": {
+      "unchanged_count": 68014,
+      "changed_count": 9986,
+      "ignored_count": 0
+    }
+  }
+}

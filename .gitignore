@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.DS_Store
+data/
+results/
+*.pt
+*.pth
+*.ckpt
+*.mat
+*.h5
+*.hdf5
+*.zip
+experiments/rcdifo/_vendor/

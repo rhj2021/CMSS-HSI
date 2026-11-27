@@ -1,0 +1,12 @@
+{
+  "repository": "https://github.com/Jiahuiqu/RCDIFO",
+  "commit": "e8d754f9eee1b36c9afb5b31760a8b20d5bfcd51",
+  "archive_url": "https://raw.githubusercontent.com/Jiahuiqu/RCDIFO/e8d754f9eee1b36c9afb5b31760a8b20d5bfcd51/RCDIFO.zip",
+  "archive_sha256": "1d3dd5b87553f8340b2fc3ef0fb0d4f080d27cdf7a2556ae261003d5d19a46c3",
+  "files": {
+    "model/main_model.py": "b3e6551435222d88f7bf8edf648a33e9ca29b628d46c423c1f12ca257674cf86",
+    "model/change_model/chang_model.py": "177170675d736dbdcc6c3898be57bf3bce15a4ee3452077fa728cafe28776314",
+    "model/change_model/SS2D.py": "83726f3466cd66062397e81c2c3b9aef1e19473b4838507caf2620d3828730d5",
+    "model/gegistration/NET.py": "c20fa7d0b32d00f47ea38872e1ceeaa4682082257e70b20ccd248231f0f7c817"
+  }
+}

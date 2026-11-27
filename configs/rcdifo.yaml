@@ -1,0 +1,25 @@
+base_config: configs/benchmark.yaml
+project:
+  output_dir: results/rcdifo
+  device: cuda:0
+  datasets: [River, Farmland, Hermiston]
+  seeds: [0, 1, 2]
+  torch_threads: 4
+model:
+  patch_size: 25
+  batch_size: 64
+  eval_batch_size: 64
+training:
+  outer_iterations: 6
+  epochs_per_iteration: 40
+  lr: 0.001
+  weight_decay: 0.0001
+  lambda_registration: 0.5
+  river_focal_alpha: 0.75
+  river_focal_gamma: 2.0
+  scheduler_T_max: 30
+  scheduler_eta_min: 0.000001
+  threshold: 0.5
+  num_workers: 0
+evaluation:
+  reference_systems: [GETNET, GLAFormer]

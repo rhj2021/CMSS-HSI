@@ -55,11 +55,10 @@ def make_pseudo_training_set(
     cva_mode: str = "l2",
     high_confidence: bool = True,
 ) -> Tuple[np.ndarray, np.ndarray, PseudoSummary]:
-    """Create pseudo labels for GETNET training.
+    """Create or filter pseudo-labels for GETNET training.
 
-    Original GETNET uses a high-quality CVA/PCACVA map as pseudo supervision.
-    For baseline use, this function either consumes a supplied pseudo map or creates one
-    with CVA + Otsu, then keeps high-confidence changed/unchanged pixels.
+    Use a supplied pseudo map or compute CVA with Otsu thresholding, then select
+    high-confidence changed and unchanged pixels.
     """
     if t1.shape != t2.shape or t1.ndim != 3:
         raise ValueError(f"Expected t1/t2 as [H,W,B], got {t1.shape} and {t2.shape}")
@@ -72,7 +71,9 @@ def make_pseudo_training_set(
             if pseudo_map.T.shape == (h, w):
                 pseudo_map = pseudo_map.T
             else:
-                raise ValueError(f"Pseudo map shape {pseudo_map.shape} does not match {(h, w)}")
+                raise ValueError(
+                    f"Pseudo map shape {pseudo_map.shape} does not match {(h, w)}"
+                )
         pseudo = _binary_from_pseudo_map(pseudo_map)
         source = "provided_map"
     else:
@@ -89,7 +90,11 @@ def make_pseudo_training_set(
     def select(indices: np.ndarray, changed_class: bool) -> np.ndarray:
         if indices.size == 0:
             return indices
-        n = int(np.ceil(indices.size * fraction)) if 0 < fraction <= 1 else int(fraction)
+        n = (
+            int(np.ceil(indices.size * fraction))
+            if 0 < fraction <= 1
+            else int(fraction)
+        )
         n = max(min_per_class, n)
         n = min(n, max_per_class, indices.size)
         scores = flat_mag[indices]
@@ -107,11 +112,21 @@ def make_pseudo_training_set(
     else:
         npos = min(max_per_class, max(min_per_class, int(len(changed) * fraction)))
         nneg = min(max_per_class, max(min_per_class, int(len(unchanged) * fraction)))
-        pos_idx = rng.choice(changed, size=min(npos, len(changed)), replace=False) if len(changed) else np.array([], dtype=int)
-        neg_idx = rng.choice(unchanged, size=min(nneg, len(unchanged)), replace=False) if len(unchanged) else np.array([], dtype=int)
+        pos_idx = (
+            rng.choice(changed, size=min(npos, len(changed)), replace=False)
+            if len(changed)
+            else np.array([], dtype=int)
+        )
+        neg_idx = (
+            rng.choice(unchanged, size=min(nneg, len(unchanged)), replace=False)
+            if len(unchanged)
+            else np.array([], dtype=int)
+        )
 
     indices = np.concatenate([pos_idx, neg_idx]).astype(np.int64)
-    labels = np.concatenate([np.ones(len(pos_idx), dtype=np.int64), np.zeros(len(neg_idx), dtype=np.int64)])
+    labels = np.concatenate(
+        [np.ones(len(pos_idx), dtype=np.int64), np.zeros(len(neg_idx), dtype=np.int64)]
+    )
     perm = rng.permutation(indices.size)
     indices = indices[perm]
     labels = labels[perm]

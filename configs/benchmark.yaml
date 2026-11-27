@@ -1,0 +1,181 @@
+# Benchmark configuration for the published experiments.
+project:
+  name: cmss_benchmark
+  data_root: data
+  output_dir: results/benchmark
+  datasets:
+  - River
+  - Farmland
+  - Hermiston
+  seeds:
+  - 0
+  - 1
+  - 2
+  device: cuda:0
+  progress: true
+split:
+  block_size: 24
+  train_fraction: 0.15
+  val_fraction: 0.1
+  guard: 3
+  max_train_per_class: 7000
+  max_val_per_class: 4000
+transforms:
+- name: shift_1
+  type: translation
+  dx: 1.0
+  dy: 0.0
+- name: shift_3
+  type: translation
+  dx: 3.0
+  dy: 0.0
+- name: row_shift_4
+  type: row_shift
+  amplitude: 4.0
+  period: 72.0
+  harmonic: 0.2
+correction:
+  seed: 31415
+  pca_components: 3
+  global_radius: 6
+  row_radius: 3
+  smooth_sigma: 6.0
+  outer_iters: 3
+  weighting:
+    pca_components: 16
+    sample_size: 40000
+    epsilon: 0.05
+  safe_selector:
+    enabled: true
+    sample_size: 50000
+    use_change_weights: true
+    identity_min_abs_improvement: 0.0001
+    identity_min_rel_improvement: 0.05
+    pca_tie_abs: 0.0001
+    pca_tie_rel: 0.001
+  tvl1:
+    attachment: 15.0
+    tightness: 0.3
+    num_warp: 5
+    num_iter: 10
+    tol: 0.0001
+    prefilter: false
+    max_abs_displacement: 9.0
+baselines:
+  GETNET:
+    enabled: true
+    target_bands: 96
+    normalize: channel_minmax
+    plane_normalize: maxabs
+    pseudo_fraction: 0.7
+    max_pseudo_per_class: 6000
+    min_pseudo_per_class: 32
+    pseudo_val_fraction: 0.1
+    pool_size: 8
+    epochs: 45
+    batch_size: 64
+    eval_batch_size: 128
+    lr: 0.0002
+    weight_decay: 1.0e-05
+    patience: 9
+    num_workers: 0
+  GLAFormer:
+    enabled: true
+    patch_size: 6
+    embed_dim: 128
+    depth: 4
+    heads: 8
+    drop_path: 0.08
+    epochs: 60
+    batch_size: 64
+    eval_batch_size: 128
+    lr: 0.0003
+    weight_decay: 0.0001
+    patience: 12
+    amp: true
+    num_workers: 0
+report:
+  main_transforms:
+  - shift_1
+  - shift_3
+  - row_shift_4
+  gap_min_denominator: 0.01
+benchmark:
+  schema_version: 1
+  expected_inventory: configs/datasets.json
+  strict_inventory: true
+  detectors:
+  - GETNET
+  - GLAFormer
+  geometry_transforms:
+  - name: random_row_x3
+    type: random_row
+    amplitude_x: 3.0
+    amplitude_y: 0.0
+    sigma: 24.0
+  - name: rotation_1deg
+    type: affine
+    rotation_deg: 1.0
+    scale: 1.0
+    dx: 0.0
+    dy: 0.0
+  - name: mixed_affine
+    type: affine_extended
+    rotation_deg: 0.5
+    scale: 1.005
+    shear_xy: 0.005
+    shear_yx: 0.0
+    dx: 0.75
+    dy: -0.5
+  - name: random_row_xy_3_1
+    type: random_row
+    amplitude_x: 3.0
+    amplitude_y: 1.0
+    sigma: 24.0
+  baseline_methods:
+  - pca3_translation
+  - tvl1_dense
+  - scanline_unweighted
+  - cmss
+  - phase_correlation
+  - ecc_affine
+  - roma_affine
+  geometry_methods:
+  - cmss
+  - roma_affine
+  - ecc_affine
+  k_values:
+  - 1
+  - 2
+  - 3
+  - 5
+  k_selector_enabled: false
+  acceptance_margins:
+  - 0.01
+  - 0.025
+  - 0.05
+  - 0.1
+  pca_tie_margins:
+  - 0.0
+  - 0.001
+  - 0.005
+  external:
+    ecc_max_iterations: 200
+    ecc_epsilon: 1.0e-06
+    ecc_gaussian_size: 5
+    roma_matches: 5000
+    ransac_reprojection_px: 2.0
+    ransac_iterations: 10000
+    ransac_confidence: 0.999
+  runtime:
+    warmup: 1
+    repeats: 3
+    transforms:
+    - row_shift_4
+    methods:
+    - pca3_translation
+    - tvl1_dense
+    - cmss
+    - phase_correlation
+    - ecc_affine
+    - roma_affine

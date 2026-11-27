@@ -8,7 +8,14 @@ from torch.utils.data import Dataset
 class GETNETPixelDataset(Dataset):
     """Pixel-pair dataset that creates GETNET spectral similarity planes on demand."""
 
-    def __init__(self, t1: np.ndarray, t2: np.ndarray, indices: np.ndarray, labels: np.ndarray, plane_normalize: str = "maxabs"):
+    def __init__(
+        self,
+        t1: np.ndarray,
+        t2: np.ndarray,
+        indices: np.ndarray,
+        labels: np.ndarray,
+        plane_normalize: str = "maxabs",
+    ):
         if t1.shape != t2.shape or t1.ndim != 3:
             raise ValueError("t1/t2 must be [H,W,B] with matching shapes")
         self.h, self.w, self.b = t1.shape
@@ -27,7 +34,8 @@ class GETNETPixelDataset(Dataset):
         idx = self.indices[i]
         before = self.t1[idx]
         after = self.t2[idx]
-        plane = after[None, :] - before[:, None]  # [B, B], same element-to-wise matrix as GETNET.
+        # Construct the B x B spectral similarity plane used by GETNET.
+        plane = after[None, :] - before[:, None]
         if self.plane_normalize == "maxabs":
             denom = np.max(np.abs(plane)) + 1e-6
             plane = plane / denom
@@ -38,13 +46,21 @@ class GETNETPixelDataset(Dataset):
             pass
         else:
             raise ValueError(f"Unknown plane_normalize: {self.plane_normalize}")
-        return torch.from_numpy(plane[None, :, :].astype(np.float32)), torch.tensor(self.labels[i], dtype=torch.long)
+        return torch.from_numpy(plane[None, :, :].astype(np.float32)), torch.tensor(
+            self.labels[i], dtype=torch.long
+        )
 
 
 class GETNETFullImageIterator:
     """Batch iterator for full-image prediction without materializing all [B,B] planes."""
 
-    def __init__(self, t1: np.ndarray, t2: np.ndarray, batch_size: int = 256, plane_normalize: str = "maxabs"):
+    def __init__(
+        self,
+        t1: np.ndarray,
+        t2: np.ndarray,
+        batch_size: int = 256,
+        plane_normalize: str = "maxabs",
+    ):
         self.h, self.w, self.b = t1.shape
         self.t1 = t1.reshape(-1, self.b).astype(np.float32)
         self.t2 = t2.reshape(-1, self.b).astype(np.float32)
